@@ -1,0 +1,157 @@
+// Prisma schema for Neon PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String    @id @default(uuid())
+  email                 String    @unique
+  password              String
+  name                  String
+  tier                  Tier      @default(FREE)
+  stripeCustomerId      String?   @map("stripe_customer_id")
+  stripeSubscriptionId  String?   @map("stripe_subscription_id")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  apiKeys               ApiKey[]
+  usages                Usage[]
+
+  @@map("users")
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  key        String    @unique
+  name       String
+  siteKey    String    @unique @map("site_key")
+  secretKey  String    @unique @map("secret_key")
+  domains    String[]
+  isActive   Boolean   @default(true) @map("is_active")
+  lastUsed   DateTime? @map("last_used")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usages     Usage[]
+
+  @@index([userId])
+  @@map("api_keys")
+}
+
+model Challenge {
+  id             String      @id @default(uuid())
+  challengeId    String      @unique @map("challenge_id")
+  siteKey        String      @map("site_key")
+  token          String      @unique
+  action         String      @default("verify")
+  verified       Boolean     @default(false)
+  score          Int         @default(0)
+  riskLevel      RiskLevel   @default(MEDIUM) @map("risk_level")
+  ipAddress      String      @map("ip_address")
+  userAgent      String      @map("user_agent")
+  fingerprint    String
+  botScore       Int         @default(0) @map("bot_score")
+  vpnDetected    Boolean     @default(false) @map("vpn_detected")
+  proxyDetected  Boolean     @default(false) @map("proxy_detected")
+  torDetected    Boolean     @default(false) @map("tor_detected")
+  abuseScore     Int         @default(0) @map("abuse_score")
+  geoCountry     String?     @map("geo_country")
+  geoCity        String?     @map("geo_city")
+  geoRegion      String?     @map("geo_region")
+  expiresAt      DateTime    @map("expires_at")
+  verifiedAt     DateTime?   @map("verified_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  @@index([challengeId])
+  @@index([siteKey])
+  @@index([ipAddress])
+  @@index([fingerprint])
+  @@index([expiresAt])
+  @@map("challenges")
+}
+
+model Usage {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  apiKeyId     String   @map("api_key_id")
+  endpoint     String
+  method       String
+  statusCode   Int      @map("status_code")
+  responseTime Int      @map("response_time")
+  ipAddress    String   @map("ip_address")
+  timestamp    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKey       ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp])
+  @@index([apiKeyId])
+  @@map("usage")
+}
+
+model AbuseLog {
+  id          String      @id @default(uuid())
+  ipAddress   String      @map("ip_address")
+  fingerprint String?
+  siteKey     String?     @map("site_key")
+  reason      String
+  severity    Severity
+  blocked     Boolean     @default(false)
+  metadata    Json        @default("{}")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([ipAddress, createdAt])
+  @@index([fingerprint, createdAt])
+  @@map("abuse_logs")
+}
+
+model Blacklist {
+  id         String       @id @default(uuid())
+  type       BlacklistType
+  value      String
+  reason     String
+  expiresAt  DateTime?    @map("expires_at")
+  permanent  Boolean      @default(false)
+  addedBy    String?      @map("added_by")
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  @@unique([type, value])
+  @@index([type, value])
+  @@index([expiresAt])
+  @@map("blacklist")
+}
+
+enum Tier {
+  FREE
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum BlacklistType {
+  IP
+  FINGERPRINT
+  EMAIL
+}

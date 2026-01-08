@@ -1,0 +1,24 @@
+# SecuredCaptcha License Agreement
+
+This software is licensed for use by the purchaser only.
+
+## Terms of Use
+
+1. **License Grant**: The purchaser is granted a non-exclusive, non-transferable license to use this software.
+
+2. **Permitted Use**: 
+   - Deploy on your own servers/hosting
+   - Modify source code for your own needs
+   - Use for commercial projects
+   - Use for client projects
+
+3. **Restrictions**:
+   - Cannot resell or redistribute the original package unless camoz.dev has said otherwise
+   - Cannot claim authorship of the original code
+   - Cannot use for competing CAPTCHA services 
+
+4. **Warranty Disclaimer**: This software is provided "as is" without warranty of any kind.
+
+5. **Liability**: The author is not liable for any damages arising from the use of this software.
+
+For questions about licensing, contact the package provider.

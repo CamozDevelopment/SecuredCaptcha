@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - SecuredAPI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .register-container {
+      background: #1e1e2f;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid #2a2a3e;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .logo p {
+      color: #a0a0a0;
+      font-size: 14px;
+    }
+
+    h2 {
+      color: #e0e0e0;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #b0b0b0;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #3a3a4e;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      background: #2a2a3e;
+      color: #e0e0e0;
+    }
+
+    input::placeholder {
+      color: #666;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #2f2f45;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #3a3a4e;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #2a2a3e;
+      color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #2f2f45;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:disabled {
+      background: #4a4a5e;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .error-message {
+      background: #3a1e1e;
+      color: #ef9a9a;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #5a2e2e;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .success-message {
+      background: #1e3a1e;
+      color: #81c784;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #2e5a2e;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      height: 4px;
+      background: #3a3a4e;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .password-strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .password-strength-bar.weak {
+      width: 33%;
+      background: #ef5350;
+    }
+
+    .password-strength-bar.medium {
+      width: 66%;
+      background: #ffa726;
+    }
+
+    .password-strength-bar.strong {
+      width: 100%;
+      background: #66bb6a;
+    }
+
+    .password-hint {
+      font-size: 12px;
+      color: #808080;
+      margin-top: 5px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+      margin-top: 3px;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      color: #a0a0a0;
+      font-weight: normal;
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .checkbox-group label a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .checkbox-group label a:hover {
+      text-decoration: underline;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 25px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #3a3a4e;
+    }
+
+    .divider span {
+      position: relative;
+      background: #1e1e2f;
+      padding: 0 15px;
+      color: #808080;
+      font-size: 13px;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #a0a0a0;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .login-link a:hover {
+      color: #7e8ef9;
+    }
+
+    .tier-info {
+      background: #2a2a3e;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border: 1px solid #3a3a4e;
+    }
+
+    .tier-info h4 {
+      color: #e0e0e0;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .tier-info p {
+      color: #a0a0a0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="logo">
+      <h1>SecuredAPI</h1>
+      <p>Advanced CAPTCHA & Bot Detection</p>
+    </div>
+
+    <h2>Create Account</h2>
+
+    <div class="error-message" id="error-message"></div>
+    <div class="success-message" id="success-message"></div>
+
+    <div class="tier-info">
+      <h4>🎉 Start with Free Tier</h4>
+      <p>Get 1,000 free verification requests per month. No credit card required.</p>
+    </div>
+
+    <form id="register-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Create a strong password" required minlength="8">
+        <div class="password-strength">
+          <div class="password-strength-bar" id="password-strength-bar"></div>
+        </div>
+        <div class="password-hint">At least 8 characters, include numbers and symbols</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" placeholder="Re-enter your password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="company">Company (Optional)</label>
+        <input type="text" id="company" placeholder="Your company name">
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">
+          I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
+        </label>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="newsletter">
+        <label for="newsletter">
+          Send me product updates and tips
+        </label>
+      </div>
+
+      <button type="submit" id="register-btn">Create Account</button>
+    </form>
+
+    <div class="divider">
+      <span>OR</span>
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a href="/login.html">Sign in</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('register-form');
+    const errorDiv = document.getElementById('error-message');
+    const successDiv = document.getElementById('success-message');
+    const registerBtn = document.getElementById('register-btn');
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('password-strength-bar');
+
+    // Password strength checker
+    passwordInput.addEventListener('input', () => {
+      const password = passwordInput.value;
+      let strength = 0;
+
+      if (password.length >= 8) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/)) strength++;
+      if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+      strengthBar.className = 'password-strength-bar';
+      if (strength <= 1) {
+        strengthBar.classList.add('weak');
+      } else if (strength <= 3) {
+        strengthBar.classList.add('medium');
+      } else {
+        strengthBar.classList.add('strong');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const company = document.getElementById('company').value;
+      const terms = document.getElementById('terms').checked;
+
+      // Hide previous messages
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // Validate terms
+      if (!terms) {
+        errorDiv.textContent = 'You must agree to the Terms of Service';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // Disable button
+      registerBtn.disabled = true;
+      registerBtn.textContent = 'Creating account...';
+
+      try {
+        const response = await fetch('/api/v1/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            company: company || undefined
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+
+        // Show success
+        successDiv.textContent = 'Account created successfully! Redirecting to login...';
+        successDiv.style.display = 'block';
+
+        // Redirect to login
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 2000);
+
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
+        registerBtn.disabled = false;
+        registerBtn.textContent = 'Create Account';
+      }
+    });
+
+    // Check if already logged in
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (token) {
+      window.location.href = '/dashboard.html';
+    }
+  </script>
+</body>
+</html>

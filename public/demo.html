@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecuredAPI CAPTCHA Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #3498db;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .captcha-container {
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .result.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .result.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .features {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #eee;
+    }
+
+    .features h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features li {
+      padding: 10px 0;
+      color: #666;
+    }
+
+    .features li:before {
+      content: "✓ ";
+      color: #4caf50;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SecuredAPI CAPTCHA Demo</h1>
+    <p class="subtitle">Advanced bot detection and abuse prevention</p>
+
+    <form id="demo-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="your@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <input type="text" id="message" placeholder="Your message" required>
+      </div>
+
+      <div class="captcha-container">
+        <div id="secured-captcha"></div>
+      </div>
+
+      <button type="submit" id="submit-btn" disabled>Submit Form</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <div class="features">
+      <h2>Features Included</h2>
+      <ul>
+        <li><strong>Bot Detection:</strong> Advanced algorithms detect automated behavior</li>
+        <li><strong>Browser Fingerprinting:</strong> Unique device identification</li>
+        <li><strong>Mouse & Keyboard Tracking:</strong> Behavioral analysis</li>
+        <li><strong>VPN/Proxy Detection:</strong> Identify suspicious IP addresses</li>
+        <li><strong>Rate Limiting:</strong> Prevent abuse and spam</li>
+        <li><strong>Real-time Risk Scoring:</strong> Dynamic threat assessment</li>
+        <li><strong>Tor Detection:</strong> Block anonymization networks</li>
+        <li><strong>Abuse Pattern Recognition:</strong> Machine learning-based detection</li>
+      </ul>
+
+      <h2 style="margin-top: 30px;">Quick Integration</h2>
+      <p>Add this to your website:</p>
+      <pre style="background: #f5f5f5; padding: 15px; border-radius: 6px; overflow-x: auto;"><code>&lt;script src="https://api.yourdomain.com/widget.js"&gt;&lt;/script&gt;
+&lt;div id="secured-captcha"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  SecuredCaptcha.render('secured-captcha', {
+    siteKey: 'YOUR_SITE_KEY',
+    callback: function(token) {
+      // Send token to your server for verification
+      console.log('Token:', token);
+    }
+  });
+&lt;/script&gt;</code></pre>
+    </div>
+  </div>
+
+  <script src="/widget.js"></script>
+  <script>
+    // Debug: Check if SecuredCaptcha is loaded
+    console.log('SecuredCaptcha object:', window.SecuredCaptcha);
+    
+    let captchaToken = null;
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, rendering captcha...');
+      
+      if (!window.SecuredCaptcha) {
+        console.error('SecuredCaptcha not loaded!');
+        return;
+      }
+
+      // Render the CAPTCHA widget
+      try {
+        SecuredCaptcha.render('secured-captcha', {
+          siteKey: 'demo-site-key', // Replace with actual site key
+          callback: function(token) {
+            captchaToken = token;
+            document.getElementById('submit-btn').disabled = false;
+            console.log('CAPTCHA verified! Token:', token);
+          }
+        });
+      } catch (error) {
+        console.error('Error rendering captcha:', error);
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('demo-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!captchaToken) {
+        showResult('Please complete the CAPTCHA verification', 'error');
+        return;
+      }
+
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      // In a real implementation, send this to your backend
+      // along with the captchaToken for server-side verification
+      console.log('Submitting form with:', {
+        email,
+        message,
+        captchaToken
+      });
+
+      showResult('Form submitted successfully! ✓', 'success');
+      
+      // Reset form
+      setTimeout(() => {
+        document.getElementById('demo-form').reset();
+        document.getElementById('submit-btn').disabled = true;
+        captchaToken = null;
+      }, 2000);
+    });
+
+    function showResult(message, type) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = message;
+      resultDiv.className = 'result ' + type;
+      resultDiv.style.display = 'block';
+
+      setTimeout(() => {
+        resultDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

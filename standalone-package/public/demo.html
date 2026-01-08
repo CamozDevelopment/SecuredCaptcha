@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecuredCaptcha Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .demo-container {
+      background: #1e1e2f;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid #2a2a3e;
+    }
+
+    h1 {
+      color: #e0e0e0;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    p {
+      color: #a0a0a0;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #b0b0b0;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #3a3a4e;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      background: #2a2a3e;
+      color: #e0e0e0;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #2f2f45;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .captcha-wrapper {
+      margin: 25px 0;
+    }
+
+    .success-message {
+      background: #1e3a1e;
+      color: #81c784;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #2e5a2e;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .token-display {
+      background: #2a2a3e;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      color: #a0a0a0;
+    }
+
+    .error-message {
+      background: #3a1e1e;
+      color: #ef9a9a;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #5a2e2e;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .info-box {
+      background: #1e2a3a;
+      border: 1px solid #2e4a5a;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 25px;
+      font-size: 14px;
+      color: #7ec8ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>SecuredCaptcha Demo</h1>
+    <p>Try our advanced bot detection system with behavioral analysis</p>
+
+    <div class="info-box">
+      <strong>Default Site Key:</strong> demo-site-key<br>
+      <small>You can create your own keys after deploying</small>
+    </div>
+
+    <form id="demo-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <input type="text" id="message" placeholder="Your message here" required>
+      </div>
+
+      <div class="captcha-wrapper">
+        <div id="captcha-container"></div>
+      </div>
+
+      <button type="submit" id="submit-btn" disabled>Submit Form</button>
+    </form>
+
+    <div class="success-message" id="success-message">
+      ✓ Form submitted successfully!
+      <div class="token-display" id="token-display"></div>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+  </div>
+
+  <script src="/widget.js"></script>
+  <script>
+    let verificationToken = null;
+
+    // Render CAPTCHA
+    SecuredCaptcha.render('captcha-container', {
+      siteKey: 'demo-site-key',
+      callback: function(token) {
+        console.log('CAPTCHA verified! Token:', token);
+        verificationToken = token;
+        document.getElementById('submit-btn').disabled = false;
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('demo-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      const successDiv = document.getElementById('success-message');
+      const errorDiv = document.getElementById('error-message');
+      const tokenDisplay = document.getElementById('token-display');
+
+      // Hide previous messages
+      successDiv.style.display = 'none';
+      errorDiv.style.display = 'none';
+
+      if (!verificationToken) {
+        errorDiv.textContent = 'Please complete the CAPTCHA verification';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      try {
+        // Verify token with your backend
+        const response = await fetch('/api/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            token: verificationToken,
+            siteKey: 'demo-site-key',
+            email: email,
+            message: message
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          successDiv.style.display = 'block';
+          tokenDisplay.textContent = `Token: ${verificationToken.substring(0, 50)}...`;
+          
+          // Reset form
+          document.getElementById('demo-form').reset();
+          verificationToken = null;
+          document.getElementById('submit-btn').disabled = true;
+          
+          // Reload CAPTCHA
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+        } else {
+          errorDiv.textContent = 'Verification failed: ' + (result.error || 'Unknown error');
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Error: ' + error.message;
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
